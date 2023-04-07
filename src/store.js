@@ -15,12 +15,12 @@ const persistConfig = {
     stateReconciler: autoMergeLevel2,
     blacklist: [apiSlice.reducerPath],
 }
-const rootReducer = combineReducers({
-    // [apiSlice.reducerPath]: apiSlice.reducer,
-    auth: authReducer,
-})
+// const rootReducer = combineReducers({
+// [apiSlice.reducerPath]: apiSlice.reducer,
+//     auth: authReducer,
+// })
 // This would produce the following state object
-const persistedReducer = persistReducer(persistConfig, rootReducer)
+const persistedReducer = persistReducer(persistConfig, authReducer)
 
 
 const store = configureStore({

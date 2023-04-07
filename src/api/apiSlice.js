@@ -5,7 +5,7 @@ import { setCredentials } from '../features/auth/authSlice'
 const baseQuery = fetchBaseQuery({
     // baseUrl: 'https://server.dharawalpindi.tk/api/v1',
     // baseUrl: 'https://local.dharawalpindi.tk/api/v1',
-    baseUrl: '/api',
+    baseUrl: 'http://localhost:5230/api',
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
         const accessToken = getState().auth.token
