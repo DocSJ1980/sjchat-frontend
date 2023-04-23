@@ -3,9 +3,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { setCredentials } from '../features/auth/authSlice'
 
 const baseQuery = fetchBaseQuery({
-    // baseUrl: 'https://server.dharawalpindi.tk/api/v1',
-    // baseUrl: 'https://local.dharawalpindi.tk/api/v1',
-    baseUrl: 'http://localhost:5230/api',
+    baseUrl: 'https://sjchat-backend.vercel.app/api',
     credentials: 'include',
     prepareHeaders: (headers, { getState }) => {
         const accessToken = getState().auth.token

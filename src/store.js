@@ -6,8 +6,6 @@ import storage from 'redux-persist/lib/storage';
 import { persistReducer, persistStore, FLUSH, REHYDRATE, REGISTER, PURGE, PAUSE, PERSIST } from 'redux-persist';
 import thunk from 'redux-thunk';
 import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
-// import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
-// im0port autoMergeLevel2 from "redux-persist/lib/stateReconciler/autoMergeLevel2";
 
 const persistConfig = {
     key: 'root',
@@ -15,16 +13,15 @@ const persistConfig = {
     stateReconciler: autoMergeLevel2,
     blacklist: [apiSlice.reducerPath],
 }
-// const rootReducer = combineReducers({
-// [apiSlice.reducerPath]: apiSlice.reducer,
-//     auth: authReducer,
-// })
-// This would produce the following state object
 const persistedReducer = persistReducer(persistConfig, authReducer)
 
+const rootReducer = combineReducers({
+    auth: persistedReducer,
+    [apiSlice.reducerPath]: apiSlice.reducer
+})
 
 const store = configureStore({
-    reducer: persistedReducer,
+    reducer: rootReducer,
     middleware: getDefaultMiddleware =>
         getDefaultMiddleware({
             thunk: true,

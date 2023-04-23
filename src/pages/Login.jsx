@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react'
 import { useLoginMutation } from '../features/auth/authApiSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { selectPersist } from '../features/auth/authSlice';
+import { selectPersist, setCredentials } from '../features/auth/authSlice';
 
 
 const Login = () => {
@@ -33,11 +33,11 @@ const Login = () => {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        console.log(formData)
+        // console.log(formData)
         try {
             const { accessToken } = await login({ ...formData }).unwrap()
-            console.log(email, password)
             dispatch(setCredentials({ accessToken }))
+            console.log(accessToken)
             setUsername('')
             setPassword('')
             navigate('/dash')
@@ -51,10 +51,11 @@ const Login = () => {
             } else {
                 setErrMsg(err.data?.message);
             }
-            errRef.current.focus();
+            if (errRef && errRef.current) {
+                errRef.current.focus();
+            }
         }
     };
-
     const handleSignup = (e) => {
         e.preventDefault();
         console.log(formData)
@@ -94,6 +95,7 @@ const Login = () => {
                                 placeholder="Full Name"
                                 value={formData.firstName}
                                 onChange={handleChange}
+                                ref={errRef}
                                 className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
                             />
                         )}
@@ -103,6 +105,7 @@ const Login = () => {
                             placeholder="Email"
                             value={formData.email}
                             onChange={handleChange}
+                            ref={errRef}
                             className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
                         />
                         <div className="relative">
@@ -112,6 +115,7 @@ const Login = () => {
                                 placeholder="Password"
                                 value={formData.password}
                                 onChange={handleChange}
+                                ref={errRef}
                                 className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
                             />
                             <svg
@@ -134,6 +138,7 @@ const Login = () => {
                                 placeholder="Confirm Password"
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
+                                ref={errRef}
                                 className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
                             />
                         )}

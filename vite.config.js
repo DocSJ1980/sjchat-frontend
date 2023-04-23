@@ -6,7 +6,7 @@ export default defineConfig({
   // server: {
   //   proxy: {
   //     '/api': {
-  //       target: 'http://localhost:5230',
+  //       target: 'https://sjchat-backend.vercel.app',
   //       changeOrigin: true,
   //       headers: {
   //         origin: 'http://localhost:5173',
