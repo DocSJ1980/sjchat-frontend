@@ -35,12 +35,11 @@ const Login = () => {
         e.preventDefault();
         // console.log(formData)
         try {
-            const { accessToken } = await login({ ...formData }).unwrap()
-            dispatch(setCredentials({ accessToken }))
-            console.log(accessToken)
+            const { accessToken, user } = await login({ ...formData }).unwrap()
+            dispatch(setCredentials({ accessToken, user }))
             setUsername('')
             setPassword('')
-            navigate('/dash')
+            navigate('/welcome')
         } catch (err) {
             if (!err.status) {
                 setErrMsg('No Server Response');
@@ -142,9 +141,18 @@ const Login = () => {
                                 className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
                             />
                         )}
-                        <button className="bg-[#0FED3C] hover:bg-green-500 text-white font-bold py-2 px-4 rounded-2xl mt-4">
-                            {isSignup ? 'Sign Up' : 'Log In'}
+                        <button className={`bg-[#0FED3C] hover:bg-green-500 text-white font-bold py-2 px-4 rounded-2xl mt-4 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isLoading}>
+                            {isLoading ? (
+                                <svg className="animate-spin h-5 w-5 text-white mx-auto" viewBox="0 0 24 24">
+                                    <path className="opacity-75" fill="white" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2z" />
+                                    <path className="opacity-25" fill="white" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10c1.961 0 3.789-.574 5.354-1.561l2.478 2.478C16.084 21.336 14.133 22 12 22c-5.523 0-10-4.477-10-10S6.477 2 12 2v10h10c0 1.768-.664 3.416-1.768 4.646l2.478 2.478C21.426 15.788 22 13.96 22 12z" />
+                                </svg>
+                            ) : (
+                                <span>{isSignup ? 'Sign Up' : 'Log In'}</span>
+                            )}
                         </button>
+
+
                     </form>
                     <div className='mt-3 grid grid-cols-3 items-center text-gray-500'>
                         <hr className='text-gray-500' />

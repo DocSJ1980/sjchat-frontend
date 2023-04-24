@@ -44,6 +44,21 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 }
             }
         }),
+        profile: builder.mutation({
+            query: ({ userId }) => ({
+                url: '/user/userdetail',
+                method: 'POST',
+                body: { userId },
+            }),
+            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+                console.log(arg)
+                try {
+                    const { data } = await queryFulfilled
+                } catch (err) {
+                    console.log(err)
+                }
+            }
+        }),
     })
 })
 
@@ -51,4 +66,5 @@ export const {
     useLoginMutation,
     useSendLogoutMutation,
     useRefreshMutation,
+    useProfileMutation
 } = authApiSlice 
