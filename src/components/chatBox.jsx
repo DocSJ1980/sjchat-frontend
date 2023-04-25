@@ -12,7 +12,6 @@ const ChatBox = ({ chat, currentUser }) => {
             try {
                 const { data } = await profile({ userId })
                 setuserData(data.foundUser)
-                console.log(userData)
             } catch (error) {
                 console.log(error)
             }
@@ -22,10 +21,10 @@ const ChatBox = ({ chat, currentUser }) => {
     }, [chat, currentUser])
     return (
         <>
-            <div className="ChatBox-Container">
+            <div class="ChatBox-container bg-cardColor rounded-lg grid grid-rows-3">
                 <>
-                    <div className="chat-header">
-                        <div className="follower">
+                    <div class="chat-header py-4 px-4">
+                        <div class="follower flex justify-between items-center">
                             <img
                                 // src={
                                 //   userData?.profilePicture

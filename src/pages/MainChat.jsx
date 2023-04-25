@@ -23,21 +23,21 @@ const MainChat = () => {
     }, [user])
 
     return (
-        <div class="relative grid grid-cols-4 gap-4">
+        <div className="relative grid grid-cols-4 gap-4">
             <div className="flex flex-col gap-1 col-span-1">
-                <div class="flex flex-col gap-4 bg-cardColor rounded-lg p-4 h-auto min-h-screen overflow-y-scroll">
+                <div className="flex flex-col gap-4 bg-cardColor rounded-lg p-4 h-auto min-h-screen overflow-y-scroll">
                     <h2 className="text-lg font-bold text-gray-700">Chats</h2>
                     <div className="">
-                        {chats.map((chat) => (
+                        {user && chats.map((chat) => (
                             <div onClick={() => setCurrentChat(chat)}>
-                                <Conversation key={chat._id} data={chat} currentUser={user._id} />
+                                <Conversation key={chat._id} data={chat} currentUserId={user._id} />
                             </div>
                         ))}
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col gap-4 col-span-3">
-                <ChatBox chat={currentChat} currentUserId={user._id} />
+            <div className="flex flex-col gap-4 col-span-3">
+                <ChatBox chat={currentChat} currentUser={user._id} />
 
             </div>
         </div>

@@ -15,7 +15,6 @@ const Conversation = ({ data, currentUserId }) => {
             }
         }
         getUserData()
-
     }, [])
 
     return (
