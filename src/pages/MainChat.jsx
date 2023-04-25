@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { userChats } from '../api/chatRequests';
+import ChatBox from '../components/chatBox';
 import Conversation from '../components/conversation';
 import { selectCurrentToken, selectUser } from '../features/auth/authSlice';
 
 const MainChat = () => {
     const user = useSelector(selectUser)
     const [chats, setChats] = useState([])
+    const [currentChat, setCurrentChat] = useState(null)
     useEffect(() => {
         const getChats = async () => {
             try {
@@ -27,12 +29,15 @@ const MainChat = () => {
                     <h2 className="text-lg font-bold text-gray-700">Chats</h2>
                     <div className="">
                         {chats.map((chat) => (
-                            <Conversation key={chat._id} data={chat} currentUserId={user._id} />
+                            <div onClick={() => setCurrentChat(chat)}>
+                                <Conversation key={chat._id} data={chat} currentUser={user._id} />
+                            </div>
                         ))}
                     </div>
                 </div>
             </div>
             <div class="flex flex-col gap-4 col-span-3">
+                <ChatBox chat={currentChat} currentUserId={user._id} />
 
             </div>
         </div>
