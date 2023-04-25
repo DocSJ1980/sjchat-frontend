@@ -38,7 +38,6 @@ const MainChat = () => {
             </div>
             <div className="flex flex-col gap-4 col-span-3">
                 <ChatBox chat={currentChat} currentUser={user._id} />
-
             </div>
         </div>
     );
