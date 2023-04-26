@@ -2,11 +2,11 @@ import React from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
 import { useProfileMutation } from '../features/auth/authApiSlice'
-import { getMessages } from '../api/messageRequests'
+import { addMessage, getMessages } from '../api/messageRequests'
 import { format } from 'timeago.js'
 import InputEmoji from '@xbc/react-input-emoji'
 
-const ChatBox = ({ chat, currentUser }) => {
+const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
     const [userData, setuserData] = useState(null)
     const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState("")
@@ -39,18 +39,40 @@ const ChatBox = ({ chat, currentUser }) => {
         if (chat !== null) fetchMessages()
     }, [chat])
 
-    const handleOnEnter = (newMessage) => {
-        console.log(newMessage)
+    const handleOnEnter = async (e) => {
+        e.preventDefault()
+        const message = {
+            senderId: currentUser,
+            text: newMessage,
+            chatId: chat._id
+        }
+        //send message to database
+        try {
+            const data = await addMessage(message)
+            setMessages([...messages, data])
+            setNewMessage("")
+        } catch (error) {
+            console.log(error)
+        }
+        const receiverId = chat.members.find((id) => id !== currentUser)
+        setSendMessage({ ...message, receiverId })
     }
+
+    useEffect(() => {
+        if (receiveMessage !== null && receiveMessage.chatId === chat._id) {
+            setMessages([...messages, receiveMessage])
+        }
+    }, [receiveMessage])
+
 
     return (
         <>
-            <div class="ChatBox-container bg-cardColor rounded-lg grid grid-rows-3">
+            <div className="ChatBox-container h-screen flex flex-col w-full">
                 {chat ? (
 
                     <>
-                        <div class="chat-header py-4 px-4">
-                            <div class="follower flex justify-between items-center">
+                        <div className="chat-header bg-gray-300 py-4 px-4 mr-4 mt-2 ml-0 mb-1 border rounded-xl max-h-28">
+                            <div className="follower flex justify-start items-center">
                                 <img
                                     // src={
                                     //   userData?.profilePicture
@@ -59,9 +81,9 @@ const ChatBox = ({ chat, currentUser }) => {
                                     // }
                                     src='src\assets\user.png'
                                     alt="Profile"
-                                    className="followerImage w-12 h-12 mr-4 my-4"
+                                    className="followerImage w-12 h-12 mr-4"
                                 />
-                                <div className="name flex flex-col items-start justify-center pr-4" style={{ fontSize: '0.8rem' }}>
+                                <div className="name flex flex-col " style={{ fontSize: '0.8rem' }}>
                                     <span>
                                         {userData?.name}
                                     </span>
@@ -71,30 +93,28 @@ const ChatBox = ({ chat, currentUser }) => {
                                         Online
                                     </span>
                                 </div>
+                                <hr className="w-85 border-gray-300" />
                             </div>
-                            <hr className="w-85 border-gray-300" />
                         </div>
-                        <div class="chat-body flex flex-col flex-grow flex-shrink-0">
+                        <div className="chat-body flex flex-col flex-1 overflow-y-auto">
                             {messages?.map((message) => (
-                                <div key={message?._id} class={
-                                    message.senderId === currentUser ? "bg-gradient-to-r from-blue-400 to-cyan-500 rounded-tr-xl rounded-bl-xl rounded-br-xl self-end p-3 max-w-2xl w-auto flex flex-col gap-2 mr-4" : "message bg-buttonBg text-white p-2 rounded-tr-xl rounded-bl-xl rounded-br-xl max-w-28 w-auto flex flex-col gap-2"
+                                <div key={message?._id} className={
+                                    message.senderId === currentUser ? "bg-gradient-to-r from-blue-300 to-cyan-500 rounded-tr-xl rounded-bl-xl rounded-br-xl self-end p-3 max-w-2xl w-auto flex flex-col gap-2 my-1 mr-4" : "bg-gradient-to-r from-orange-500 to-orange-300 rounded-tl-xl rounded-br-xl rounded-bl-xl self-start p-3 max-w-2xl w-auto flex flex-col gap-2 my-1 ml-4"
                                 }>
                                     <span>{message?.text}</span>
                                     <span>{format(message?.createdAt)}</span>
                                 </div>
                             ))}
                         </div>
-                        <div class="chat-sender bg-white flex justify-between h-14 items-center gap-4 p-2 mr-8 mb-4 rounded-lg self-end w-3/4 flex-shrink-0 flex-grow-0 fixed bottom-0">
+                        <div className="chat-sender bg-gray-300 flex justify-between h-14 items-center gap-4 px-4 mr-3 ml-10 rounded-lg self-end flex-shrink-0 flex-grow-0 bottom-0 w-full">
                             <div>TODO</div>
                             <InputEmoji
-                                className="h-70 bg-gray-300 rounded-md border-none outline-none flex-1 text-sm px-4"
                                 value={newMessage}
                                 onChange={setNewMessage}
                                 cleanOnEnter
-                                onEnter={handleOnEnter}
                                 placeholder="Type a message"
                             />
-                            <button class="bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 text-white font-bold py-2 px-4 rounded-full border-4 border-transparent ">
+                            <button className="bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 text-white font-bold py-2 px-4 rounded-full border-4 border-transparent" onClick={handleOnEnter}>
                                 Send
                             </button>
                         </div>

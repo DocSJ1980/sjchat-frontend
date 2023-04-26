@@ -9,3 +9,13 @@ export const getMessages = async (id) => {
         throw error
     }
 }
+
+export const addMessage = async (data) => {
+    try {
+        const response = await API.post("/message/", data)
+        return response.data
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}

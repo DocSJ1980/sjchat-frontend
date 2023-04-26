@@ -1,14 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { userChats } from '../api/chatRequests';
 import ChatBox from '../components/chatBox';
 import Conversation from '../components/conversation';
-import { selectCurrentToken, selectUser } from '../features/auth/authSlice';
+import { selectUser } from '../features/auth/authSlice';
+import { io } from 'socket.io-client';
 
 const MainChat = () => {
     const user = useSelector(selectUser)
     const [chats, setChats] = useState([])
     const [currentChat, setCurrentChat] = useState(null)
+    const socket = useRef()
+    const [onlineUsers, setOnlineUsers] = useState([])
+    const [sendMessage, setSendMessage] = useState(null)
+    const [receiveMessage, setReceiveMessage] = useState(null)
+
+    useEffect(() => {
+        socket.current = io("http://localhost:8800")
+        socket.current.emit("new-user-add", user._id)
+        //create socket on event to get-users
+        socket.current.on("get-users", (users) => {
+            setOnlineUsers(users)
+        })
+
+    }, [user])
+
+    useEffect(() => {
+        if (sendMessage !== null) {
+            socket.current.emit("send-message", sendMessage)
+        }
+
+    }, [sendMessage])
+
+    useEffect(() => {
+        socket.current.on("recieve-message", (data) => {
+            setReceiveMessage(data)
+        })
+    }, [])
+
     useEffect(() => {
         const getChats = async () => {
             try {
@@ -37,7 +66,7 @@ const MainChat = () => {
                 </div>
             </div>
             <div className="flex flex-col gap-4 col-span-3">
-                <ChatBox chat={currentChat} currentUser={user._id} />
+                <ChatBox chat={currentChat} currentUser={user._id} setSendMessage={setSendMessage} receiveMessage={receiveMessage} />
             </div>
         </div>
     );
