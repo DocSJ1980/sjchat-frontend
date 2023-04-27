@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useProfileMutation } from '../features/auth/authApiSlice'
 
-const Conversation = ({ data, currentUserId }) => {
+const Conversation = ({ data, currentUserId, online }) => {
     const [userData, setuserData] = useState(null)
     const [profile] = useProfileMutation()
     useEffect(() => {
@@ -21,9 +21,9 @@ const Conversation = ({ data, currentUserId }) => {
         <>
             <div className="conversation flex justify-between items-center p-4 rounded hover:bg-gray-300 cursor-pointer">
                 <div className="relative flex items-center">
-                    {/* {online && ( */}
-                    <div className="online-dot absolute top-0 left-0  w-2 h-2 rounded-full bg-green-500"></div>
-                    {/* )} */}
+                    {online && (
+                        <div className="online-dot absolute top-0 left-0  w-2 h-2 rounded-full bg-green-500"></div>
+                    )}
                     <img
                         // src={
                         //   userData?.profilePicture
@@ -38,10 +38,8 @@ const Conversation = ({ data, currentUserId }) => {
                         <span>
                             {userData?.name}
                         </span>
-                        <span style={{ color: "#51e200" }}>
-                            {/* <span style={{ color: online ? "#51e200" : "" }}> */}
-                            {/* {online? "Online" : "Offline"} */}
-                            Online
+                        <span style={{ color: online ? "#51e200" : "" }}>
+                            {online ? "Online" : "Offline"}
                         </span>
                     </div>
                 </div>

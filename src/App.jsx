@@ -44,7 +44,9 @@ function App() {
     content = <p>Loading ....</p>
   } else {
     content =
-      <div className="App">
+      <div className="App overflow-hidden text-black bg-gray-100 p-4 overflow-y-hidden">
+        <div className="absolute top-0 right-0 w-56 h-36 rounded-full bg-yellow-300 filter blur-3xl" />
+        <div className="absolute top-36 left-0 w-56 h-36 rounded-full bg-yellow-300 filter blur-3xl" />
         <ToastContainer theme={mode} />
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
