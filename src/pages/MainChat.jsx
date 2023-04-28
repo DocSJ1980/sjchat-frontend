@@ -6,6 +6,9 @@ import Conversation from '../components/conversation';
 import { selectUser } from '../features/auth/authSlice';
 import { io } from 'socket.io-client';
 import LogoSearch from '../components/logoSearch';
+import { UilSignOutAlt } from '@iconscout/react-unicons'
+import { useSendLogoutMutation } from "../features/auth/authApiSlice"
+import ThemeChanger from '../components/themeChanger';
 
 const MainChat = () => {
     const user = useSelector(selectUser)
@@ -15,6 +18,8 @@ const MainChat = () => {
     const [onlineUsers, setOnlineUsers] = useState([])
     const [sendMessage, setSendMessage] = useState(null)
     const [receiveMessage, setReceiveMessage] = useState(null)
+    const [sendLogout] = useSendLogoutMutation()
+
 
     useEffect(() => {
         socket.current = io("http://localhost:8800")
@@ -58,12 +63,15 @@ const MainChat = () => {
         return online ? true : false;
     }
 
+
     return (
-        <div className="relative grid grid-cols-4 gap-4 overflow-y-hidden">
-            <div className="flex flex-col gap-1 col-span-1 overflow-y-hidden h-screen">
-                <LogoSearch />
+        <div className="relative grid grid-cols-4 gap-4">
+            <div className="left-side-chat flex flex-col gap-1 col-span-1 h-screen pt-4 pl-4">
+                <div className="w-full flex justify-evenly items-center">
+                    <LogoSearch />
+                    <h2 className="text-lg font-bold text-gray-700 dark:text-gray-300">Chats</h2>
+                </div>
                 <div className="flex flex-col gap-4 bg-cardColor rounded-lg p-4 h-full overflow-y-auto">
-                    <h2 className="text-lg font-bold text-gray-700">Chats</h2>
                     <div className="">
                         {user && chats.map((chat) => (
                             <div onClick={() => setCurrentChat(chat)}>
@@ -72,8 +80,18 @@ const MainChat = () => {
                         ))}
                     </div>
                 </div>
+                <div className="chat-sender bg-gray-300 flex justify-between h-14 items-center gap-4 px-4 mr-3 ml-10 rounded-lg self-end flex-shrink-0 flex-grow-0 bottom-0 w-full overflow-y-hidden ">
+                    <img
+                        src='src\assets\user.png'
+                        alt="Profile"
+                        className="followerImage w-12 h-12"
+                    />
+                    <p className='text-slate-800 text-lg font-bold'>{user.name}</p>
+                    <ThemeChanger />
+                    <UilSignOutAlt color="#fca61f" size="24" onClick={sendLogout} className="hover:gray-500 cursor-pointer rounded-full" />
+                </div>
             </div>
-            <div className="flex flex-col gap-4 col-span-3">
+            <div className="right-side-chat flex flex-col gap-4 col-span-3">
                 <ChatBox chat={currentChat} currentUser={user._id} setSendMessage={setSendMessage} receiveMessage={receiveMessage} />
             </div>
         </div>

@@ -20,26 +20,19 @@ const Conversation = ({ data, currentUserId, online }) => {
     return (
         <>
             <div className="conversation flex justify-between items-center p-4 rounded hover:bg-gray-300 cursor-pointer">
-                <div className="relative flex items-center">
+                <div className="relative flex items-center flex-1">
                     {online && (
-                        <div className="online-dot absolute top-0 left-0  w-2 h-2 rounded-full bg-green-500"></div>
+                        <div className="online-dot absolute top-0 left-0 w-2 h-2 rounded-full bg-green-500"></div>
                     )}
                     <img
-                        // src={
-                        //   userData?.profilePicture
-                        //     ? `${process.env.REACT_APP_PUBLIC_FOLDER}/${userData.profilePicture}`
-                        //     : `${process.env.REACT_APP_PUBLIC_FOLDER}/defaultProfile.png`
-                        // }
-                        src='src\assets\user.png'
+                        src="src\assets\user.png"
                         alt="Profile"
                         className="followerImage w-12 h-12 mr-4"
                     />
-                    <div className="name flex flex-col items-start justify-center" style={{ fontSize: '0.8rem' }}>
-                        <span>
-                            {userData?.name}
-                        </span>
-                        <span style={{ color: online ? "#51e200" : "" }}>
-                            {online ? "Online" : "Offline"}
+                    <div className="name flex flex-col items-start justify-center dark:text-gray-300 text-lg font-bold" style={{ fontSize: '0.8rem' }}>
+                        <span>{userData?.name}</span>
+                        <span style={{ color: online ? '#51e200' : '' }}>
+                            {online ? 'Online' : 'Offline'}
                         </span>
                     </div>
                 </div>

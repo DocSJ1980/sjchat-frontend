@@ -72,11 +72,11 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
 
     return (
 
-        <div className="ChatBox-container flex flex-col w-full max-h-screen overflow-y-hidden">
+        <div className="ChatBox-container flex flex-col w-full h-full max-h-screen overflow-hidden pt-4">
             {chat ? (
                 <>
-                    <div className="chat-header bg-gray-300 py-4 px-4 mr-4 mt-2 ml-0 mb-1 border rounded-xl max-h-28 overflow-y-hidden" >
-                        <div className="follower flex justify-start items-center overflow-y-hidden">
+                    <div className="chat-header bg-gray-300 py-2 px-4 mr-4 ml-0 mb-1 border rounded-xl max-h-28 " >
+                        <div className="follower flex justify-start items-center">
                             <img
                                 // src={
                                 //   userData?.profilePicture
@@ -119,7 +119,7 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
                     </div>
                 </>
             ) : (
-                <span>Click on a chat to start conversation</span>
+                <span className='dark:text-gray-300'>Click on a chat to start conversation</span>
             )}
         </div >
 

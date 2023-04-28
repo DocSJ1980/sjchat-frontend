@@ -3,8 +3,10 @@ import { useLoginMutation } from '../features/auth/authApiSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { selectPersist, setCredentials } from '../features/auth/authSlice';
-
-
+import ThemeChanger from '../components/themeChanger';
+import { UilEye } from '@iconscout/react-unicons'
+import { UilEyeSlash } from '@iconscout/react-unicons'
+import { UilSpinnerAlt } from '@iconscout/react-unicons'
 const Login = () => {
     const [isSignup, setIsSignup] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -77,6 +79,7 @@ const Login = () => {
             <div className="bg-gray-100 overflow-y-hidden flex shadow-lg max-w-3xl p-5">
                 <div className="sm:w-1/2 mr-5">
                     <h2 className="font-bold text-2xl mb-4">
+                        <ThemeChanger />
                         {isSignup ? 'Sign Up' : 'Log In'}
                     </h2>
                     {/* <p className="text-sm mt-4 mb-4">
@@ -117,18 +120,11 @@ const Login = () => {
                                 ref={errRef}
                                 className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
                             />
-                            <svg
-                                onClick={() => setShowPassword(!showPassword)}
-                                width="16"
-                                height="16"
-                                fill="gray"
-                                className="bi bi-eye-slash absolute top-9 right-3 -translate-y-1/2 cursor-pointer"
-                                viewBox="0 0 16 16"
-                            >
-                                <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z" />
-                                <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z" />
-                                <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z" />
-                            </svg>
+
+                            <div className="absolute top-9 right-3 -translate-y-1/2 cursor-pointer">
+
+                                {!showPassword ? <UilEyeSlash color="#B2BEB5" onClick={() => setShowPassword(!showPassword)} /> : <UilEye color="#B2BEB5" onClick={() => setShowPassword(!showPassword)} />}
+                            </div>
                         </div>
                         {isSignup && (
                             <input
@@ -143,10 +139,9 @@ const Login = () => {
                         )}
                         <button className={`bg-[#0FED3C] hover:bg-green-500 text-white font-bold py-2 px-4 rounded-2xl mt-4 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isLoading}>
                             {isLoading ? (
-                                <svg className="animate-spin h-5 w-5 text-white mx-auto" viewBox="0 0 24 24">
-                                    <path className="opacity-75" fill="white" d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2z" />
-                                    <path className="opacity-25" fill="white" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12s4.477 10 10 10c1.961 0 3.789-.574 5.354-1.561l2.478 2.478C16.084 21.336 14.133 22 12 22c-5.523 0-10-4.477-10-10S6.477 2 12 2v10h10c0 1.768-.664 3.416-1.768 4.646l2.478 2.478C21.426 15.788 22 13.96 22 12z" />
-                                </svg>
+                                <div className="flex items-center justify-center">
+                                    <UilSpinnerAlt className="h-7 w-6    rounded-full animate-spin" />
+                                </div>
                             ) : (
                                 <span>{isSignup ? 'Sign Up' : 'Log In'}</span>
                             )}
