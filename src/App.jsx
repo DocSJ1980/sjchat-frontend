@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux"
-import Login from "./pages/login"
+import Login from "./pages/Login"
 import { selectCurrentToken, selectMode, selectPersist } from "./features/auth/authSlice"
 import { useEffect, useRef } from "react"
 import { useRefreshMutation } from "./features/auth/authApiSlice"

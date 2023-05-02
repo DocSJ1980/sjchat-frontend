@@ -26,6 +26,7 @@ const authSlice = createSlice({
             state.token = null
             state.mode = 'light'
             state.persist = false
+            state.user = null
         }
     }
 })

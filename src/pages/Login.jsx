@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { useLoginMutation } from '../features/auth/authApiSlice';
+import { useLoginMutation, useSignUpMutation } from '../features/auth/authApiSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { selectPersist, setCredentials } from '../features/auth/authSlice';
@@ -15,7 +15,9 @@ const Login = () => {
         password: '',
         fullName: '',
         confirmPassword: '',
+        gender: '',
     });
+    const [profileImage, setProfileImage] = useState(null)
     const userRef = useRef()
     const errRef = useRef()
     const [errMsg, setErrMsg] = useState('')
@@ -23,6 +25,7 @@ const Login = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [login, { isLoading }] = useLoginMutation()
+    const [signUp, { isLoading: signUpLoading }] = useSignUpMutation()
 
 
     const handleChange = (e) => {
@@ -57,29 +60,56 @@ const Login = () => {
             }
         }
     };
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
-        console.log(formData)
-        // TODO: Implement signup functionality
+        console.log(profileImage)
+        try {
+            const { accessToken, user } = await signUp({
+                name: formData.fullName,
+                email: formData.email,
+                password: formData.password,
+                gender: formData.gender,
+                profileImage: profileImage,
+            }).unwrap()
+            dispatch(setCredentials({ accessToken, user }))
+            setUsername('')
+            setPassword('')
+            navigate('/welcome')
+        } catch (err) {
+            if (!err.status) {
+                setErrMsg('No Server Response');
+            } else if (err.status === 400) {
+                setErrMsg('Missing Username or Password');
+            } else if (err.status === 401) {
+                setErrMsg('Unauthorized');
+            } else {
+                setErrMsg(err.data?.message);
+            }
+            if (errRef && errRef.current) {
+                errRef.current.focus();
+            }
+        }
     };
-
     const handleSignupToggle = () => {
         setFormData({
             email: '',
             password: '',
             fullName: '',
             confirmPassword: '',
+            gender: '',
         })
         setIsSignup((prevIsSignup) => !prevIsSignup);
     };
 
 
     return (
-        <div className="bg-gray-50 min-h-screen flex items-center justify-center">
-            <div className="bg-gray-100 overflow-y-hidden flex shadow-lg max-w-3xl p-5">
+        <div className=" min-h-screen flex items-center justify-center relative">
+            <div className="absolute top-0 right-0 mt-4 mr-4">
+                <ThemeChanger />
+            </div>
+            <div className="bg-gray-100 dark:bg-gray-600 border-gray-900 rounded-2xl overflow-y-hidden flex shadow-lg dark:shadow-2xl max-w-3xl p-5">
                 <div className="sm:w-1/2 mr-5">
-                    <h2 className="font-bold text-2xl mb-4">
-                        <ThemeChanger />
+                    <h2 className="font-bold text-2xl dark:text-gray-300 mb-4">
                         {isSignup ? 'Sign Up' : 'Log In'}
                     </h2>
                     {/* <p className="text-sm mt-4 mb-4">
@@ -127,16 +157,50 @@ const Login = () => {
                             </div>
                         </div>
                         {isSignup && (
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                placeholder="Confirm Password"
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                ref={errRef}
-                                className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
-                            />
+                            <>
+                                <input
+                                    type="password"
+                                    name="confirmPassword"
+                                    placeholder="Confirm Password"
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    ref={errRef}
+                                    className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
+                                />
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <input
+                                        type="file"
+                                        name="profile_image"
+                                        onChange={(e) => {
+                                            setProfileImage(e.target.files[0]);
+                                        }}
+                                    />
+                                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>
+                                        <label style={{ marginRight: '10px' }}>
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="Male"
+                                                onChange={handleChange}
+                                            />
+                                            Male
+                                        </label>
+                                        <label>
+                                            <input
+                                                type="radio"
+                                                name="gender"
+                                                value="Female"
+                                                onChange={handleChange}
+                                            />
+                                            Female
+                                        </label>
+                                    </div>
+                                </div>
+
+
+                            </>
                         )}
+
                         <button className={`bg-[#0FED3C] hover:bg-green-500 text-white font-bold py-2 px-4 rounded-2xl mt-4 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isLoading}>
                             {isLoading ? (
                                 <div className="flex items-center justify-center">
@@ -151,22 +215,26 @@ const Login = () => {
                     </form>
                     <div className='mt-3 grid grid-cols-3 items-center text-gray-500'>
                         <hr className='text-gray-500' />
-                        <p className='text-center text-sm'>OR</p>
+                        <p className='text-center text-sm dark:text-gray-300'>OR</p>
                         <hr className='text-gray-500' />
                     </div>
                     <button className='bg-white border py-2 w-full rounded-xl mt-5 flex justify-center items-center text-sm'>
                         <img src='src\assets\icons8-google.svg' alt='google' className='mr-3' width="25px" />
                         Login with Google
                     </button>
-                    <p className='text-xs mt-5 border-b border-gray-400 py-4'>Forgot your password? </p>
+                    <p className='text-xs mt-5 border-b border-gray-400 py-4 dark:text-gray-300'>Forgot your password? </p>
                     {isSignup ? <>
                         <div className='mt-3 text-xs flex justify-between items-center'>
-                            <p >Already have an account...</p>
+                            <div className="dark:text-gray-300">
+                                <p >Already have an account...</p>
+                            </div>
                             <button className='py-2 px-5 bg-white border rounded-xl' onClick={handleSignupToggle} >Login</button>
                         </div>
                     </> : <>
                         <div className='mt-3 text-xs flex justify-between items-center'>
-                            <p >If you don't have an account...</p>
+                            <div className="dark:text-gray-300">
+                                <p >If you don't have an account...</p>
+                            </div>
                             <button className='py-2 px-5 bg-white border rounded-xl' onClick={handleSignupToggle} >Register</button>
                         </div>
                     </>}

@@ -10,6 +10,22 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 body: { ...credentials },
             })
         }),
+        signUp: builder.mutation({
+            query: ({ name, email, password, gender, profileImage }) => {
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('email', email);
+                formData.append('password', password);
+                formData.append('gender', gender);
+                formData.append('profile_image', profileImage);
+
+                return {
+                    url: '/user/new',
+                    method: 'POST',
+                    body: formData,
+                };
+            },
+        }),
         sendLogout: builder.mutation({
             query: () => ({
                 url: '/user/logout',
@@ -64,6 +80,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
 export const {
     useLoginMutation,
+    useSignUpMutation,
     useSendLogoutMutation,
     useRefreshMutation,
     useProfileMutation

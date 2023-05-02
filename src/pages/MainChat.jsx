@@ -22,7 +22,8 @@ const MainChat = () => {
 
 
     useEffect(() => {
-        socket.current = io("http://localhost:8800")
+        socket.current = io("http://localhost:5230")
+        // socket.current = io("https://sjchat-backend.vercel.app/")
         socket.current.emit("new-user-add", user._id)
         //create socket on event to get-users
         socket.current.on("get-users", (users) => {
