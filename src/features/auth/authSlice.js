@@ -15,8 +15,7 @@ const authSlice = createSlice({
             state.user = user
         },
         setMode: (state, action) => {
-            const { mode } = action.payload
-            state.mode = mode
+            state.mode = action.payload
         },
         setPersist: (state, action) => {
             const { persist } = action.payload
@@ -24,7 +23,7 @@ const authSlice = createSlice({
         },
         logOut: (state, action) => {
             state.token = null
-            state.mode = 'light'
+            state.mode = ''
             state.persist = false
             state.user = null
         }
@@ -35,7 +34,7 @@ export const { setCredentials, setMode, setPersist, logOut } = authSlice.actions
 
 export default authSlice.reducer
 
-export const selectCurrentToken = (state) => state.auth ? state.auth.token : null
-export const selectMode = (state) => state.auth ? state.auth.mode : "light"
-export const selectPersist = (state) => state.auth ? state.auth.persist : false;
+export const selectCurrentToken = (state) => state.auth.token
+export const selectMode = (state) => state.auth.mode
+export const selectPersist = (state) => state.auth.persist
 export const selectUser = (state) => state.auth.user

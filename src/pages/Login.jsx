@@ -1,39 +1,98 @@
-import React, { useRef, useState } from 'react'
-import { useLoginMutation, useSignUpMutation } from '../features/auth/authApiSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { selectPersist, setCredentials } from '../features/auth/authSlice';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import ThemeChanger from '../components/themeChanger';
+import { useDispatch } from 'react-redux';
+import { useLoginMutation, useSignUpMutation } from '../features/auth/authApiSlice';
 import { UilEye } from '@iconscout/react-unicons'
 import { UilEyeSlash } from '@iconscout/react-unicons'
 import { UilSpinnerAlt } from '@iconscout/react-unicons'
+import { setCredentials } from '../features/auth/authSlice';
+import { toast } from 'react-toastify';
 const Login = () => {
     const [isSignup, setIsSignup] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
-        fullName: '',
-        confirmPassword: '',
-        gender: '',
-    });
     const [profileImage, setProfileImage] = useState(null)
-    const userRef = useRef()
-    const errRef = useRef()
-    const [errMsg, setErrMsg] = useState('')
-    const persist = useSelector(selectPersist)
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     const dispatch = useDispatch()
-    const [login, { isLoading }] = useLoginMutation()
+    const [login, { isLoading: loginLoading }] = useLoginMutation()
     const [signUp, { isLoading: signUpLoading }] = useSignUpMutation()
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+            fullName: '',
+            confirmPassword: '',
+            gender: '',
+        },
+        validationSchema: yup.object().shape({
+            fullName: yup.string()
+                .when('isSignup', {
+                    is: true,
+                    then: yup.string()
+                        .min(3, 'Full name should be at least 3 characters.')
+                        .max(50, 'Full name should be at most 50 characters.')
+                        .required('Full name is required.'),
+                    otherwise: yup.string()
+                        .min(3, 'Full name should be at least 3 characters.')
+                        .max(50, 'Full name should be at most 50 characters.')
+                }),
+            email: yup.string()
+                .email('Invalid email address.')
+                .required('Email address is required.'),
+            password: yup.string()
+                .min(8, 'Password should be at least 8 characters.')
+                .required('Password is required.'),
+            confirmPassword: yup.string()
+                .when('isSignup', {
+                    is: true,
+                    then: yup.string()
+                        .oneOf([yup.ref('password'), null], 'Passwords do not match.')
+                        .required('Confirm password is required.'),
+                    otherwise: yup.string()
+                        .oneOf([yup.ref('password'), null], 'Passwords do not match.')
+                }),
+            gender: yup.string()
+                .when('isSignup', {
+                    is: true,
+                    then: yup.string()
+                        .required('Gender is required.'),
+                    otherwise: yup.string()
+                })
+        }),
+        onSubmit: async (values) => {
+            try {
+                // submit form data here
+                if (isSignup) {
+                    const { accessToken, user } = await signUp({
+                        name: values.fullName,
+                        email: values.email,
+                        password: values.password,
+                        gender: values.gender,
+                        profileImage: profileImage,
+                    }).unwrap()
+                    dispatch(setCredentials({ accessToken, user }))
+                    navigate('/email-verify')
+                }
+                if (!isSignup) {
+                    const { accessToken, user } = await login({
+                        email: values.email,
+                        password: values.password,
+                    }).unwrap()
+                    dispatch(setCredentials({ accessToken, user }))
+                    navigate('/welcome')
+                }
+            } catch (error) {
+                console.error(error);
+                toast(error.data?.message)
+            }
+        },
+    });
 
+    const handleSignupToggle = () => {
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevState) => ({
-            ...prevState,
-            [name]: value,
-        }));
+        setIsSignup((prevIsSignup) => !prevIsSignup);
     };
 
     const handleLogin = async (e) => {
@@ -42,8 +101,6 @@ const Login = () => {
         try {
             const { accessToken, user } = await login({ ...formData }).unwrap()
             dispatch(setCredentials({ accessToken, user }))
-            setUsername('')
-            setPassword('')
             navigate('/welcome')
         } catch (err) {
             if (!err.status) {
@@ -60,21 +117,19 @@ const Login = () => {
             }
         }
     };
-    const handleSignup = async (e) => {
+    const handleSignup = async () => {
         e.preventDefault();
         console.log(profileImage)
         try {
             const { accessToken, user } = await signUp({
-                name: formData.fullName,
-                email: formData.email,
-                password: formData.password,
-                gender: formData.gender,
+                name: formik.values.fullName,
+                email: formik.values.email,
+                password: formik.values.password,
+                gender: formik.values.gender,
                 profileImage: profileImage,
             }).unwrap()
             dispatch(setCredentials({ accessToken, user }))
-            setUsername('')
-            setPassword('')
-            navigate('/welcome')
+            navigate('/email-verify')
         } catch (err) {
             if (!err.status) {
                 setErrMsg('No Server Response');
@@ -90,17 +145,6 @@ const Login = () => {
             }
         }
     };
-    const handleSignupToggle = () => {
-        setFormData({
-            email: '',
-            password: '',
-            fullName: '',
-            confirmPassword: '',
-            gender: '',
-        })
-        setIsSignup((prevIsSignup) => !prevIsSignup);
-    };
-
 
     return (
         <div className=" min-h-screen flex items-center justify-center relative">
@@ -112,97 +156,102 @@ const Login = () => {
                     <h2 className="font-bold text-2xl dark:text-gray-300 mb-4">
                         {isSignup ? 'Sign Up' : 'Log In'}
                     </h2>
-                    {/* <p className="text-sm mt-4 mb-4">
-                        {isSignup ? 'No Account? Sign Up' : 'Already a member? Log in'}
-
-                    </p> */}
-                    <form
-                        onSubmit={isSignup ? handleSignup : handleLogin}
-                        className="flex flex-col gap-4"
-                    >
+                    <form onSubmit={formik.handleSubmit}>
                         {isSignup && (
-                            <input
-                                type="text"
-                                name="fullName"
-                                placeholder="Full Name"
-                                value={formData.firstName}
-                                onChange={handleChange}
-                                ref={errRef}
-                                className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
-                            />
+                            <div className="form-group">
+                                <input
+                                    type="text"
+                                    name="fullName"
+                                    className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
+                                    placeholder="Enter full name"
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.fullName}
+                                />
+                                {formik.touched.fullName && formik.errors.fullName ? (
+                                    <div className="error">{formik.errors.fullName}</div>
+                                ) : null}
+                            </div>
                         )}
-                        <input
-                            type="email"
-                            name="email"
-                            placeholder="Email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            ref={errRef}
-                            className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
-                        />
+                        <div className="form-group">
+                            <input
+                                type="email"
+                                name="email"
+                                className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
+                                placeholder="Enter email"
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.email}
+                            />
+                            {formik.touched.email && formik.errors.email ? (
+                                <div className="error">{formik.errors.email}</div>
+                            ) : null}
+                        </div>
+
                         <div className="relative">
                             <input
                                 type={showPassword ? 'text' : 'password'}
                                 name="password"
-                                placeholder="Password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                ref={errRef}
                                 className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
+                                placeholder="Enter password"
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={formik.values.password}
                             />
-
                             <div className="absolute top-9 right-3 -translate-y-1/2 cursor-pointer">
 
                                 {!showPassword ? <UilEyeSlash color="#B2BEB5" onClick={() => setShowPassword(!showPassword)} /> : <UilEye color="#B2BEB5" onClick={() => setShowPassword(!showPassword)} />}
                             </div>
+                            {formik.touched.password && formik.errors.password ? (
+                                <div className="error">{formik.errors.password}</div>
+                            ) : null}
                         </div>
                         {isSignup && (
-                            <>
+                            <div className="form-group">
                                 <input
-                                    type="password"
+                                    type={showPassword ? 'text' : 'password'}
                                     name="confirmPassword"
-                                    placeholder="Confirm Password"
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    ref={errRef}
                                     className="border-2 border-gray-300 rounded-xl p-2 w-full mt-4"
+                                    placeholder="Confirm password"
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.confirmPassword}
                                 />
-                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <input
-                                        type="file"
-                                        name="profile_image"
-                                        onChange={(e) => {
-                                            setProfileImage(e.target.files[0]);
-                                        }}
-                                    />
-                                    <div style={{ display: 'flex', alignItems: 'center', marginLeft: '10px' }}>
-                                        <label style={{ marginRight: '10px' }}>
-                                            <input
-                                                type="radio"
-                                                name="gender"
-                                                value="Male"
-                                                onChange={handleChange}
-                                            />
-                                            Male
-                                        </label>
-                                        <label>
-                                            <input
-                                                type="radio"
-                                                name="gender"
-                                                value="Female"
-                                                onChange={handleChange}
-                                            />
-                                            Female
-                                        </label>
-                                    </div>
-                                </div>
+                                {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
+                                    <div className="error">{formik.errors.confirmPassword}</div>
+                                ) : null}
+                            </div>)}
+                        {isSignup && (
 
-
-                            </>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <input
+                                    type="file"
+                                    name="profile_image"
+                                    className="border-2 border-gray-300 rounded-xl p-2 w-1/2 mt-4 mr-2"
+                                    onChange={(e) => {
+                                        setProfileImage(e.target.files[0]);
+                                    }}
+                                />
+                                <select
+                                    name="gender"
+                                    className="border-2 border-gray-300 rounded-xl p-2 w-1/2 mt-4"
+                                    placeholder='Select Gender'
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.gender}
+                                >
+                                    <option value="">Select gender</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                {formik.touched.gender && formik.errors.gender ? (
+                                    <div className="error">{formik.errors.gender}</div>
+                                ) : null}
+                            </div>
                         )}
-
-                        <button className={`bg-[#0FED3C] hover:bg-green-500 text-white font-bold py-2 px-4 rounded-2xl mt-4 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`} disabled={isLoading}>
-                            {isLoading ? (
+                        <button className={`bg-[#0FED3C] hover:bg-green-500 w-full text-white font-bold py-2 px-4 rounded-2xl mt-4 ${(loginLoading || signUpLoading) ? 'opacity-50 cursor-not-allowed' : ''}`} type='submit' disabled={(loginLoading || signUpLoading)}>
+                            {(loginLoading || signUpLoading) ? (
                                 <div className="flex items-center justify-center">
                                     <UilSpinnerAlt className="h-7 w-6    rounded-full animate-spin" />
                                 </div>
@@ -210,15 +259,14 @@ const Login = () => {
                                 <span>{isSignup ? 'Sign Up' : 'Log In'}</span>
                             )}
                         </button>
-
-
                     </form>
+
                     <div className='mt-3 grid grid-cols-3 items-center text-gray-500'>
                         <hr className='text-gray-500' />
                         <p className='text-center text-sm dark:text-gray-300'>OR</p>
                         <hr className='text-gray-500' />
                     </div>
-                    <button className='bg-white border py-2 w-full rounded-xl mt-5 flex justify-center items-center text-sm'>
+                    <button onClick={() => toast("Toast Working")} className='bg-white border py-2 w-full rounded-xl mt-5 flex justify-center items-center text-sm'>
                         <img src='src\assets\icons8-google.svg' alt='google' className='mr-3' width="25px" />
                         Login with Google
                     </button>
@@ -245,10 +293,9 @@ const Login = () => {
                         <img src='src\assets\loginpage.jpg' className='rounded-2xl  ' alt='login image' />
                     </div>
                 </div>
-
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Login
+export default Login;
