@@ -18,6 +18,25 @@ const Login = () => {
     const dispatch = useDispatch()
     const [login, { isLoading: loginLoading }] = useLoginMutation()
     const [signUp, { isLoading: signUpLoading }] = useSignUpMutation()
+    const signUpSchema = yup.object().shape({
+        fullName: yup
+            .string()
+            .min(3, 'Full name should be at least 3 characters.')
+            .max(50, 'Full name should be at most 50 characters.')
+            .required('Full name is required.'),
+        email: yup.string().email('Invalid email address.').required('Email address is required.'),
+        password: yup.string().min(8, 'Password should be at least 8 characters.').required('Password is required.'),
+        confirmPassword: yup
+            .string()
+            .oneOf([yup.ref('password'), null], 'Passwords do not match.')
+            .required('Confirm password is required.'),
+        gender: yup.string().required("Gender is required"),
+        // profile_image: yup.mixed().required("Profile Picture is required"),
+    })
+    const loginSchema = yup.object().shape({
+        email: yup.string().email('Invalid email address.').required('Email address is required.'),
+        password: yup.string().min(8, 'Password should be at least 8 characters.').required('Password is required.'),
+    })
     const formik = useFormik({
         initialValues: {
             email: '',
@@ -26,61 +45,30 @@ const Login = () => {
             confirmPassword: '',
             gender: '',
         },
-        validationSchema: yup.object().shape({
-            fullName: yup.string()
-                .when('isSignup', {
-                    is: true,
-                    then: yup.string()
-                        .min(3, 'Full name should be at least 3 characters.')
-                        .max(50, 'Full name should be at most 50 characters.')
-                        .required('Full name is required.'),
-                    otherwise: yup.string()
-                        .min(3, 'Full name should be at least 3 characters.')
-                        .max(50, 'Full name should be at most 50 characters.')
-                }),
-            email: yup.string()
-                .email('Invalid email address.')
-                .required('Email address is required.'),
-            password: yup.string()
-                .min(8, 'Password should be at least 8 characters.')
-                .required('Password is required.'),
-            confirmPassword: yup.string()
-                .when('isSignup', {
-                    is: true,
-                    then: yup.string()
-                        .oneOf([yup.ref('password'), null], 'Passwords do not match.')
-                        .required('Confirm password is required.'),
-                    otherwise: yup.string()
-                        .oneOf([yup.ref('password'), null], 'Passwords do not match.')
-                }),
-            gender: yup.string()
-                .when('isSignup', {
-                    is: true,
-                    then: yup.string()
-                        .required('Gender is required.'),
-                    otherwise: yup.string()
-                })
-        }),
+        validationSchema: isSignup ? signUpSchema : loginSchema,
+
         onSubmit: async (values) => {
             try {
                 // submit form data here
                 if (isSignup) {
-                    const { accessToken, user } = await signUp({
+                    const { accessToken, user, message } = await signUp({
                         name: values.fullName,
                         email: values.email,
                         password: values.password,
                         gender: values.gender,
                         profileImage: profileImage,
                     }).unwrap()
-                    dispatch(setCredentials({ accessToken, user }))
+                    dispatch(setCredentials({ accessToken, user, }))
+                    toast(message)
                     navigate('/email-verify')
                 }
                 if (!isSignup) {
-                    const { accessToken, user } = await login({
+                    const { accessToken, user, message } = await login({
                         email: values.email,
                         password: values.password,
                     }).unwrap()
                     dispatch(setCredentials({ accessToken, user }))
+                    toast(message)
                     navigate('/welcome')
                 }
             } catch (error) {
@@ -93,57 +81,6 @@ const Login = () => {
     const handleSignupToggle = () => {
 
         setIsSignup((prevIsSignup) => !prevIsSignup);
-    };
-
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        // console.log(formData)
-        try {
-            const { accessToken, user } = await login({ ...formData }).unwrap()
-            dispatch(setCredentials({ accessToken, user }))
-            navigate('/welcome')
-        } catch (err) {
-            if (!err.status) {
-                setErrMsg('No Server Response');
-            } else if (err.status === 400) {
-                setErrMsg('Missing Username or Password');
-            } else if (err.status === 401) {
-                setErrMsg('Unauthorized');
-            } else {
-                setErrMsg(err.data?.message);
-            }
-            if (errRef && errRef.current) {
-                errRef.current.focus();
-            }
-        }
-    };
-    const handleSignup = async () => {
-        e.preventDefault();
-        console.log(profileImage)
-        try {
-            const { accessToken, user } = await signUp({
-                name: formik.values.fullName,
-                email: formik.values.email,
-                password: formik.values.password,
-                gender: formik.values.gender,
-                profileImage: profileImage,
-            }).unwrap()
-            dispatch(setCredentials({ accessToken, user }))
-            navigate('/email-verify')
-        } catch (err) {
-            if (!err.status) {
-                setErrMsg('No Server Response');
-            } else if (err.status === 400) {
-                setErrMsg('Missing Username or Password');
-            } else if (err.status === 401) {
-                setErrMsg('Unauthorized');
-            } else {
-                setErrMsg(err.data?.message);
-            }
-            if (errRef && errRef.current) {
-                errRef.current.focus();
-            }
-        }
     };
 
     return (
@@ -230,6 +167,7 @@ const Login = () => {
                                     className="border-2 border-gray-300 rounded-xl p-2 w-1/2 mt-4 mr-2"
                                     onChange={(e) => {
                                         setProfileImage(e.target.files[0]);
+                                        console.log(profileImage)
                                     }}
                                 />
                                 <select
@@ -241,9 +179,8 @@ const Login = () => {
                                     value={formik.values.gender}
                                 >
                                     <option value="">Select gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
                                 </select>
                                 {formik.touched.gender && formik.errors.gender ? (
                                     <div className="error">{formik.errors.gender}</div>

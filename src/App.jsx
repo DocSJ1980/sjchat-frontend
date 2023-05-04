@@ -55,8 +55,8 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={token ? <Navigate to="/welcome" replace /> : <Login />} />
-          <Route path="/welcome" element={!token ? <Navigate to="/login" replace /> : <MainChat />} />
           <Route path="/email-verify" element={Email_Verification} />
+          <Route path="/welcome" element={!token ? <Navigate to="/login" replace /> : <MainChat />} />
         </Routes >
         <ToastContainer
           position="bottom-right"
