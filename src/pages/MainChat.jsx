@@ -24,7 +24,6 @@ const MainChat = () => {
 
     useEffect(() => {
         socket.current = io("http://localhost:5230")
-        // socket.current = io("https://sjchat-backend.vercel.app/")
         socket.current.emit("new-user-add", user._id)
         //create socket on event to get-users
         socket.current.on("get-users", (users) => {
@@ -77,9 +76,9 @@ const MainChat = () => {
             <div className="left-side-chat flex flex-col gap-1 col-span-1 h-screen pt-4 pl-4">
                 <div className="w-full flex justify-evenly items-center">
                     <LogoSearch />
-                    <h2 className="text-lg font-bold text-gray-700 dark:text-gray-300">Chats</h2>
                 </div>
                 <div className="flex flex-col gap-4 bg-cardColor rounded-lg p-4 h-full overflow-y-auto">
+                    <h2 className="text-lg font-bold text-gray-700 dark:text-gray-300">Chats</h2>
                     <div className="">
                         {user && chats.map((chat) => (
                             <div onClick={() => setCurrentChat(chat)}>
