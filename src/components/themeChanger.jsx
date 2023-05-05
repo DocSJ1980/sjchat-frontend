@@ -22,8 +22,8 @@ const ThemeChanger = () => {
     }, [])
 
     useEffect(() => {
-        console.log('Theme:', theme);
-        console.log('Class name:', document.documentElement.className);
+        // console.log('Theme:', theme);
+        // console.log('Class name:', document.documentElement.className);
         if (theme === "dark") {
             document.documentElement.classList.add("dark")
             dispatch(setMode('dark'))

@@ -60,15 +60,16 @@ const Login = () => {
                     }).unwrap()
                     dispatch(setCredentials({ accessToken, user, }))
                     toast(message)
+                    console.log('%cLogin.jsx line:63 Navigating to /email-verify', 'color: #26bfa5;', message);
                     navigate('/email-verify')
-                }
-                if (!isSignup) {
+                    return
+                } else {
                     const { accessToken, user, message } = await login({
                         email: values.email,
                         password: values.password,
                     }).unwrap()
                     dispatch(setCredentials({ accessToken, user }))
-                    toast(message)
+                    toast.success(message)
                     navigate('/welcome')
                 }
             } catch (error) {
@@ -85,9 +86,9 @@ const Login = () => {
 
     return (
         <div className=" min-h-screen flex items-center justify-center relative">
-            <div className="absolute top-0 right-0 mt-4 mr-4">
+            {/* <div className="absolute top-0 right-0 mt-4 mr-4">
                 <ThemeChanger />
-            </div>
+            </div> */}
             <div className="bg-gray-100 dark:bg-gray-600 border-gray-900 rounded-2xl overflow-y-hidden flex shadow-lg dark:shadow-2xl max-w-3xl p-5">
                 <div className="sm:w-1/2 mr-5">
                     <h2 className="font-bold text-2xl dark:text-gray-300 mb-4">

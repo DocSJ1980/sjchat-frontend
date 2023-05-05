@@ -9,6 +9,7 @@ import LogoSearch from '../components/logoSearch';
 import { UilSignOutAlt } from '@iconscout/react-unicons'
 import { useSendLogoutMutation } from "../features/auth/authApiSlice"
 import ThemeChanger from '../components/themeChanger';
+import { toast } from 'react-toastify';
 
 const MainChat = () => {
     const user = useSelector(selectUser)
@@ -44,6 +45,12 @@ const MainChat = () => {
             setReceiveMessage(data)
         })
     }, [])
+
+    const handleSendLogout = async () => {
+        const { message } = await sendLogout().unwrap()
+        toast.success(message)
+        socket.current.emit("log-out", user._id)
+    }
 
     useEffect(() => {
         const getChats = async () => {
@@ -88,8 +95,8 @@ const MainChat = () => {
                         className="followerImage w-12 h-12"
                     />
                     <p className='text-slate-800 text-lg font-bold'>{user.name}</p>
-                    <ThemeChanger />
-                    <UilSignOutAlt color="#fca61f" size="24" onClick={sendLogout} className="hover:gray-500 cursor-pointer rounded-full" />
+                    {/* <ThemeChanger /> */}
+                    <UilSignOutAlt color="#fca61f" size="24" onClick={handleSendLogout} className="hover:gray-500 cursor-pointer rounded-full" />
                 </div>
             </div>
             <div className="right-side-chat flex flex-col gap-4 col-span-3">
