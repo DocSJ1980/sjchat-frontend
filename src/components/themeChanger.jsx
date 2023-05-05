@@ -13,6 +13,7 @@ const ThemeChanger = () => {
     useEffect(() => {
         if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
             setTheme('dark');
+            console.log('%cthemeChanger.jsx line:16 theme', 'color: white; background-color: #007acc;', theme);
             dispatch(setMode('dark'))
         }
         else {

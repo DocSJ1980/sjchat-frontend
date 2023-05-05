@@ -107,7 +107,7 @@ const Login = () => {
                                     value={formik.values.fullName}
                                 />
                                 {formik.touched.fullName && formik.errors.fullName ? (
-                                    <div className="error">{formik.errors.fullName}</div>
+                                    <div className="text-red-500 text-sm mt-1 font-medium text-center">{formik.errors.fullName}</div>
                                 ) : null}
                             </div>
                         )}
@@ -122,7 +122,7 @@ const Login = () => {
                                 value={formik.values.email}
                             />
                             {formik.touched.email && formik.errors.email ? (
-                                <div className="error">{formik.errors.email}</div>
+                                <div className="text-red-500 text-sm mt-1 font-medium text-center">{formik.errors.email}</div>
                             ) : null}
                         </div>
 
@@ -141,7 +141,7 @@ const Login = () => {
                                 {!showPassword ? <UilEyeSlash color="#B2BEB5" onClick={() => setShowPassword(!showPassword)} /> : <UilEye color="#B2BEB5" onClick={() => setShowPassword(!showPassword)} />}
                             </div>
                             {formik.touched.password && formik.errors.password ? (
-                                <div className="error">{formik.errors.password}</div>
+                                <div className="text-red-500 text-sm mt-1 font-medium text-center">{formik.errors.password}</div>
                             ) : null}
                         </div>
                         {isSignup && (
@@ -156,7 +156,7 @@ const Login = () => {
                                     value={formik.values.confirmPassword}
                                 />
                                 {formik.touched.confirmPassword && formik.errors.confirmPassword ? (
-                                    <div className="error">{formik.errors.confirmPassword}</div>
+                                    <div className="text-red-500 text-sm mt-1 font-medium text-center">{formik.errors.confirmPassword}</div>
                                 ) : null}
                             </div>)}
                         {isSignup && (
@@ -184,7 +184,7 @@ const Login = () => {
                                     <option value="Female">Female</option>
                                 </select>
                                 {formik.touched.gender && formik.errors.gender ? (
-                                    <div className="error">{formik.errors.gender}</div>
+                                    <div className="text-red-500 text-sm mt-1 font-medium text-center">{formik.errors.gender}</div>
                                 ) : null}
                             </div>
                         )}

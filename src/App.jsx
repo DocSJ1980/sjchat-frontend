@@ -1,8 +1,6 @@
 import { useSelector } from "react-redux"
 import Login from "./pages/Login"
-import { selectCurrentToken, selectMode, selectPersist } from "./features/auth/authSlice"
-import { useEffect, useRef } from "react"
-import { useRefreshMutation } from "./features/auth/authApiSlice"
+import { selectMode } from "./features/auth/authSlice"
 import { Navigate, Route, Routes } from "react-router-dom"
 import MainChat from "./pages/MainChat"
 import { ToastContainer } from "react-toastify"
@@ -15,37 +13,7 @@ import ProtectedRoutes from "./pages/ProtectedRoutes"
 
 
 function App() {
-  // const persist = useSelector(selectPersist)
-  // const token = useSelector(selectCurrentToken)
-  // const effectRan = useRef(false)
   const mode = useSelector(selectMode)
-  console.log('%cApp.jsx line:19 mode', 'color: white; background-color: #007acc;', mode);
-  // const [refresh, {
-  //   isUninitialized,
-  //   isLoading,
-  //   isSuccess,
-  //   isError,
-  //   error
-  // }] = useRefreshMutation()
-
-  // useEffect(() => {
-  //   if (!effectRan.current) {
-  //     const verifyRefreshToken = async () => {
-  //       try {
-  //         await refresh()
-  //       }
-  //       catch (err) {
-  //         console.error(err)
-  //       }
-  //     }
-  //     if (!token && persist) {
-  //       console.log('No token running verifyRefreshToken')
-  //       verifyRefreshToken()
-  //     }
-  //     effectRan.current = true
-  //     console.log('Token present logging in')
-  //   }
-  // }, [])
 
   return (
     <div className="App overflow-x-hidden text-black bg-gray-100 dark:bg-gray-800" >
@@ -57,8 +25,10 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route element={<ProtectedRoutes />}>
-          <Route path="/email-verify" element={<Email_Verification />} />
-          <Route path="/welcome" element={<MainChat />} />
+          <Route path="/" element={<Navigate to="/welcome" />} />
+          <Route path="welcome" element={<MainChat />} />
+          <Route path="email-verify" element={<Email_Verification />} />
+          <Route path="*" element={<Navigate to="/welcome" />} />
         </Route>
       </Routes>
 
