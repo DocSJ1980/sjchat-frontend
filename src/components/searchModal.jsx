@@ -1,19 +1,31 @@
 import { useState, useEffect, useRef } from 'react';
 import { UilSearch, UilCommentAltPlus, UilTimes } from '@iconscout/react-unicons';
-import { searchUsers } from '../api/chatRequests'
+import { createChat, searchUsers } from '../api/chatRequests'
+import { useSelector } from 'react-redux';
+import { selectUser } from '../features/auth/authSlice';
 
 const SearchModal = (props) => {
     const { setShowModal } = props;
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const modalRef = useRef(null);
+    const currentUser = useSelector(selectUser)
 
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    const handleStartChat = (userId) => {
+    const handleStartChat = async (userId) => {
         // Logic to start chat with user
+        try {
+            const chat = await createChat(currentUser._id, userId)
+            console.log('New chat created:', chat)
+            // Logic to open the new chat with the user
+            setShowModal(false)
+
+        } catch (error) {
+            console.error(error)
+        }
     };
 
     useEffect(() => {

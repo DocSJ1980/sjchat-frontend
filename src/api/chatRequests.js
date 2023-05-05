@@ -19,3 +19,13 @@ export const searchUsers = async (searchTerm) => {
         throw error
     }
 }
+
+export const createChat = async (senderId, receiverId) => {
+    try {
+        const response = await API.post('/chat', { senderId, receiverId })
+        return response.data
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
