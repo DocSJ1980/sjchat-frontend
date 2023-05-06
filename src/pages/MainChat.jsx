@@ -79,22 +79,19 @@ const MainChat = () => {
                 </div>
                 <div className="flex flex-col gap-4 bg-cardColor rounded-lg p-4 h-full overflow-y-auto">
                     <h2 className="text-lg font-bold text-gray-700 dark:text-gray-300">Chats</h2>
-                    <div className="">
-                        {user && chats.map((chat) => (
-                            <div onClick={() => setCurrentChat(chat)}>
-                                <Conversation key={chat._id} data={chat} currentUserId={user._id} online={checkOnlineStatus(chat)} />
-                            </div>
-                        ))}
-                    </div>
+                    {user && chats.map((chat) => (
+                        <div onClick={() => setCurrentChat(chat)}>
+                            <Conversation key={chat._id} data={chat} currentUserId={user._id} online={checkOnlineStatus(chat)} />
+                        </div>
+                    ))}
                 </div>
                 <div className="chat-sender bg-gray-300 flex justify-between h-14 items-center gap-4 px-4 mr-3 ml-10 rounded-lg self-end flex-shrink-0 flex-grow-0 bottom-0 w-full overflow-y-hidden ">
                     <img
-                        src='src\assets\user.png'
+                        src={user.avatar.url ? user.avatar.url : "src/assets/user.png"}
                         alt="Profile"
-                        className="followerImage w-12 h-12"
+                        className="inline-block w-12 h-12 rounded-full"
                     />
                     <p className='text-slate-800 text-lg font-bold'>{user.name}</p>
-                    {/* <ThemeChanger /> */}
                     <UilSignOutAlt color="#fca61f" size="24" onClick={handleSendLogout} className="hover:gray-500 cursor-pointer rounded-full" />
                 </div>
             </div>

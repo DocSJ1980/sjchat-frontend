@@ -32,7 +32,6 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
 
                 const data = await getMessages(chat?._id)
                 setMessages(data)
-                console.log(messages)
             } catch (error) {
                 console.log(error)
             }
@@ -40,8 +39,25 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
         if (chat !== null) fetchMessages()
     }, [chat])
 
-    const handleOnEnter = async (e) => {
+    const handleOnSend = async (e) => {
         e.preventDefault()
+        const message = {
+            senderId: currentUser,
+            text: newMessage,
+            chatId: chat._id
+        }
+        //send message to database
+        try {
+            const data = await addMessage(message)
+            setMessages([...messages, data])
+            setNewMessage("")
+        } catch (error) {
+            console.log(error)
+        }
+        const receiverId = chat.members.find((id) => id !== currentUser)
+        setSendMessage({ ...message, receiverId })
+    }
+    const handleOnEnter = async () => {
         const message = {
             senderId: currentUser,
             text: newMessage,
@@ -78,14 +94,9 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
                     <div className="chat-header bg-gray-300 py-2 px-4 mr-4 ml-0 mb-1 border rounded-xl max-h-28 " >
                         <div className="follower flex justify-start items-center">
                             <img
-                                // src={
-                                //   userData?.profilePicture
-                                //     ? `${process.env.REACT_APP_PUBLIC_FOLDER}/${userData.profilePicture}`
-                                //     : `${process.env.REACT_APP_PUBLIC_FOLDER}/defaultProfile.png`
-                                // }
-                                src='src\assets\user.png'
+                                src={userData?.avatar?.url ? userData.avatar.url : "src/assets/user.png"}
                                 alt="Profile"
-                                className="followerImage w-12 h-12 mr-4"
+                                className="inline-block w-12 h-12 rounded-full mr-4"
                             />
                             <div className="name flex flex-col " style={{ fontSize: '0.8rem' }}>
                                 <span>
@@ -105,15 +116,16 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
                             </div>
                         ))}
                     </div>
-                    <div className="chat-sender bg-gray-300 flex justify-between h-14 items-center gap-4 px-4 mr-3 ml-10 rounded-lg self-end flex-shrink-0 flex-grow-0 bottom-0 w-full overflow-y-hidden">
-                        <div>TODO</div>
+                    <div className="chat-sender bg-gray-300 flex justify-between h-14 items-center gap-4 px-4   rounded-xl self-center flex-shrink-0 flex-grow-0 bottom-0 w-full overflow-y-hidden">
+                        {/* <div>TODO</div> */}
                         <InputEmoji
                             value={newMessage}
                             onChange={setNewMessage}
                             cleanOnEnter
                             placeholder="Type a message"
+                            onEnter={handleOnEnter}
                         />
-                        <button className="bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 text-white font-bold py-2 px-4 rounded-full border-4 border-transparent" onClick={handleOnEnter}>
+                        <button className="bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 text-white font-bold py-2 px-4 rounded-full border-4 border-transparent" onClick={handleOnSend}>
                             Send
                         </button>
                     </div>
