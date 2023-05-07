@@ -5,6 +5,7 @@ import { useProfileMutation } from '../features/auth/authApiSlice'
 import { addMessage, getMessages } from '../api/messageRequests'
 import { format } from 'timeago.js'
 import InputEmoji from '@xbc/react-input-emoji'
+import { toast } from 'react-toastify'
 
 const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
     const [userData, setuserData] = useState(null)
@@ -41,6 +42,7 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
 
     const handleOnSend = async (e) => {
         e.preventDefault()
+        if (!newMessage) return toast.error("Cannot Send Empty Message")
         const message = {
             senderId: currentUser,
             text: newMessage,
@@ -58,6 +60,7 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
         setSendMessage({ ...message, receiverId })
     }
     const handleOnEnter = async () => {
+        if (!newMessage) return toast.error("Cannot Send Empty Message")
         const message = {
             senderId: currentUser,
             text: newMessage,
@@ -88,10 +91,10 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
 
     return (
 
-        <div className="ChatBox-container flex flex-col w-full h-full max-h-screen overflow-hidden pt-4">
+        <div className="ChatBox-container flex flex-col flex-1 h-full w-auto" >
             {chat ? (
                 <>
-                    <div className="chat-header bg-gray-300 py-2 px-4 mr-4 ml-0 mb-1 border rounded-xl max-h-28 " >
+                    <div className="chat-header bg-gray-300 py-2 px-4 mr-0 ml-0 mb-1 border rounded-xl max-h-28 min-w-full " >
                         <div className="follower flex justify-start items-center">
                             <img
                                 src={userData?.avatar?.url ? userData.avatar.url : "src/assets/user.png"}
@@ -106,32 +109,43 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
                             <hr className="w-85 border-gray-300" />
                         </div>
                     </div>
-                    <div className="chat-body flex flex-col flex-1 overflow-y-auto">
+                    <div className="chat-body flex flex-col flex-1 overflow-y-auto ">
                         {messages?.map((message) => (
-                            <div ref={scroll} key={message?._id} className={
-                                message.senderId === currentUser ? "bg-gradient-to-r from-blue-600 to-cyan-300 rounded-tr-xl rounded-bl-xl rounded-br-xl self-end p-3 max-w-2xl w-auto flex flex-col gap-2 my-1 mr-4" : "bg-gradient-to-r from-orange-300 to-orange-600 rounded-tl-xl rounded-br-xl rounded-bl-xl self-start p-3 max-w-2xl w-auto flex flex-col gap-2 my-1 ml-4"
-                            }>
+                            <div
+                                ref={scroll}
+                                key={message?._id}
+                                className={
+                                    message.senderId === currentUser
+                                        ? 'bg-gradient-to-r from-blue-600 to-cyan-300 rounded-tr-xl rounded-bl-xl rounded-br-xl self-end p-3 max-w-md mx-auto  flex flex-col flex-wrap gap-2 my-1 mr-4 md:mr-0'
+                                        : 'bg-gradient-to-r from-orange-300 to-orange-600 rounded-tl-xl rounded-br-xl rounded-bl-xl self-start p-3  max-w-md mx-auto  flex flex-col gap-2 my-1 ml-4 md:ml-0 flex-wrap'
+                                }
+                                style={{ wordWrap: 'break-word' }}
+                            >
                                 <span>{message?.text}</span>
                                 <span>{format(message?.createdAt)}</span>
                             </div>
                         ))}
                     </div>
-                    <div className="chat-sender bg-gray-300 flex justify-between h-14 items-center gap-4 px-4   rounded-xl self-center flex-shrink-0 flex-grow-0 bottom-0 w-full overflow-y-hidden">
-                        {/* <div>TODO</div> */}
-                        <InputEmoji
-                            value={newMessage}
-                            onChange={setNewMessage}
-                            cleanOnEnter
-                            placeholder="Type a message"
-                            onEnter={handleOnEnter}
-                        />
-                        <button className="bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 text-white font-bold py-2 px-4 rounded-full border-4 border-transparent" onClick={handleOnSend}>
+                    <div className="chat-sender bg-gray-300 flex justify-between h-14 items-center gap-4 px-4 md:px-1 md:gap-1  rounded-xl self-center flex-shrink-0 flex-grow-0 bottom-0 w-full overflow-y-hidden">
+                        <div className="flex-grow">
+                            <InputEmoji
+                                value={newMessage}
+                                onChange={setNewMessage}
+                                cleanOnEnter
+                                placeholder="Type a message"
+                                onEnter={handleOnEnter}
+                            />
+                        </div>
+                        <button className="bg-orange-500 hover:bg-white hover:text-orange-500 hover:border-orange-500 text-white font-bold py-2 px-4 md:px-0 rounded-full border-4 border-transparent flex-shrink-0">
                             Send
                         </button>
                     </div>
                 </>
             ) : (
-                <span className='dark:text-gray-300'>Click on a chat to start conversation</span>
+                <div className="text-center">
+
+                    <span className='dark:text-gray-300 text-center'>Click on a chat to start conversation</span>
+                </div>
             )}
         </div >
 

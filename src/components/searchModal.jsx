@@ -3,9 +3,10 @@ import { UilSearch, UilCommentAltPlus, UilTimes } from '@iconscout/react-unicons
 import { createChat, searchUsers } from '../api/chatRequests'
 import { useSelector } from 'react-redux';
 import { selectUser } from '../features/auth/authSlice';
+import { toast } from 'react-toastify';
 
 const SearchModal = (props) => {
-    const { setShowModal } = props;
+    const { setShowModal, setNewChat, newChat } = props;
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const modalRef = useRef(null);
@@ -19,12 +20,14 @@ const SearchModal = (props) => {
         // Logic to start chat with user
         try {
             const chat = await createChat(currentUser._id, userId)
-            console.log('New chat created:', chat)
             // Logic to open the new chat with the user
             setShowModal(false)
+            setNewChat(newChat + 1)
+            toast.success(chat.message)
 
         } catch (error) {
             console.error(error)
+            toast.error(error.message)
         }
     };
 
@@ -74,9 +77,9 @@ const SearchModal = (props) => {
                     </button>
                 </div>
                 <div className="overflow-y-auto max-h-96">
-                    {searchResults && searchResults.map((user) => (
+                    {searchResults?.length > 0 && searchResults.map((user) => (
                         <div key={user._id} className="flex items-center gap-3 mb-3">
-                            <img src={user.avatar.url} alt={user.name} className="w-10 h-10 rounded-full" />
+                            <img src={user?.avatar?.url ? user.avatar.url : "src/assets/user.png"} alt={user.name} className="w-10 h-10 rounded-full" />
                             <div className="flex-grow">
                                 <div className="font-semibold text-center text-slate-800 dark:text-slate-200 ">{user.name}</div>
                             </div>

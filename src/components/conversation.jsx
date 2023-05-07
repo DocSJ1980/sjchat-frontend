@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useProfileMutation } from '../features/auth/authApiSlice'
 
-const Conversation = ({ data, currentUserId, online }) => {
+const Conversation = ({ open, data, currentUserId, online }) => {
     const [userData, setuserData] = useState(null)
     const [profile] = useProfileMutation()
     useEffect(() => {
@@ -20,20 +20,25 @@ const Conversation = ({ data, currentUserId, online }) => {
 
     return (
         <>
-            <div className="conversation flex justify-between items-center p-4 rounded hover:bg-gray-300 cursor-pointer">
+            <div key={data._id} className="flex  rounded-md p-2 cursor-pointer hover:bg-light-white text-gray-300 text-sm items-center gap-x-4 ">
                 <div className="relative flex items-center flex-1">
                     {online && (
                         <div className="online-dot absolute top-0 left-0 w-2 h-2 rounded-full bg-green-500"></div>
                     )}
-                    <img
-                        src={userData?.avatar?.url ? userData.avatar.url : "src/assets/user.png"}
-                        alt="Profile"
-                        className="inline-block w-12 h-12 rounded-full mr-4"
-                    />
-                    <div className="name flex flex-col items-start justify-center dark:text-gray-300 text-lg font-bold" style={{ fontSize: '0.8rem' }}>
-                        <span>{userData?.name}</span>
-                        <span style={{ color: online ? '#51e200' : '' }}>
-                            {online ? 'Online' : 'Offline'}
+                    <div className={`${open && "mr-4"} ${!open && "min-w-12"}`}>
+
+                        <img
+                            src={userData?.avatar?.url ? userData.avatar.url : "src/assets/user.png"}
+                            alt="Profile"
+                            className="inline-block w-12 h-12 rounded-full "
+                        />
+                    </div>
+                    <div className="flex flex-col">
+                        <span className={`${!open && "hidden"} text-slate-800 dark:text-slate-300 origin-left duration-200`}>
+                            {userData?.name}
+                        </span>
+                        <span style={{ color: online ? '#51e200' : '#566573' }} className={`${!open && "hidden"} `}>
+                            {(online) ? 'Online' : 'Offline'}
                         </span>
                     </div>
                 </div>
