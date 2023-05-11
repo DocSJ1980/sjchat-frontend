@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useProfileMutation } from '../features/auth/authApiSlice'
+import defaultProfile from '../assets/user.png'
 
 const Conversation = ({ open, data, currentUserId, online }) => {
     const [userData, setuserData] = useState(null)
@@ -28,7 +29,7 @@ const Conversation = ({ open, data, currentUserId, online }) => {
                     <div className={`${open && "mr-4"} ${!open && "min-w-12"}`}>
 
                         <img
-                            src={userData?.avatar?.url ? userData.avatar.url : "src/assets/user.png"}
+                            src={userData?.avatar?.url ? userData.avatar.url : defaultProfile}
                             alt="Profile"
                             className="inline-block w-12 h-12 rounded-full "
                         />

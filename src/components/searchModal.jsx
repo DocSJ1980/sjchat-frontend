@@ -4,6 +4,7 @@ import { createChat, searchUsers } from '../api/chatRequests'
 import { useSelector } from 'react-redux';
 import { selectUser } from '../features/auth/authSlice';
 import { toast } from 'react-toastify';
+import defaultProfile from '../assets/user.png'
 
 const SearchModal = (props) => {
     const { setShowModal, setNewChat, newChat } = props;
@@ -79,7 +80,7 @@ const SearchModal = (props) => {
                 <div className="overflow-y-auto max-h-96">
                     {searchResults?.length > 0 && searchResults.map((user) => (
                         <div key={user._id} className="flex items-center gap-3 mb-3">
-                            <img src={user?.avatar?.url ? user.avatar.url : "src/assets/user.png"} alt={user.name} className="w-10 h-10 rounded-full" />
+                            <img src={user?.avatar?.url ? user.avatar.url : defaultProfile} alt={user.name} className="w-10 h-10 rounded-full" />
                             <div className="flex-grow">
                                 <div className="font-semibold text-center text-slate-800 dark:text-slate-200 ">{user.name}</div>
                             </div>

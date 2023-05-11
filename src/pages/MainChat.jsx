@@ -8,6 +8,9 @@ import { useSendLogoutMutation } from "../features/auth/authApiSlice"
 import { UilSignOutAlt } from '@iconscout/react-unicons';
 import Conversation from '../components/conversation';
 import LogoSearch from '../components/logoSearch';
+import controlImg from '../assets/control.png'
+import logoImg from '../assets/logo.png'
+import defaultProfile from '../assets/user.png'
 
 const MainChat = () => {
     const user = useSelector(selectUser)
@@ -94,14 +97,14 @@ const MainChat = () => {
                     }  h-screen pt-8 relative duration-300`}
             >
                 <img
-                    src="./src/assets/control.png"
+                    src={controlImg}
                     className={`absolute cursor-pointer -right-3 top-9 w-7 border-dark-purple
            border-2 rounded-full  ${!open && "rotate-180"}`}
                     onClick={() => setOpen(!open)}
                 />
                 <div className="flex gap-x-4 items-center">
                     <img
-                        src="./src/assets/logo.png"
+                        src={logoImg}
                         className={`cursor-pointer duration-500 ${open && "rotate-[360deg]"
                             }`}
                     />
@@ -122,7 +125,7 @@ const MainChat = () => {
                 </div>
                 <div className="chat-sender bg-gray-300 flex justify-between h-14 items-center gap-1 px-4  absolute  rounded-lg self-end flex-shrink-0 flex-grow-0 bottom-0 w-full overflow-y-hidden ">
                     {open && <><img
-                        src={user?.avatar?.url ? user.avatar.url : "src/assets/user.png"}
+                        src={user?.avatar?.url ? user.avatar.url : defaultProfile}
                         alt="Profile"
                         className="inline-block w-12 h-12 rounded-full"
                     />

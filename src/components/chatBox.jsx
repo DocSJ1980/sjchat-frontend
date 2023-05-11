@@ -6,6 +6,7 @@ import { addMessage, getMessages } from '../api/messageRequests'
 import { format } from 'timeago.js'
 import InputEmoji from '@xbc/react-input-emoji'
 import { toast } from 'react-toastify'
+import defaultProfile from '../assets/user.png'
 
 const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
     const [userData, setuserData] = useState(null)
@@ -97,7 +98,7 @@ const ChatBox = ({ chat, currentUser, setSendMessage, receiveMessage }) => {
                     <div className="chat-header bg-gray-300 py-2 px-4 mr-0 ml-0 mb-1 border rounded-xl max-h-28 min-w-full " >
                         <div className="follower flex justify-start items-center">
                             <img
-                                src={userData?.avatar?.url ? userData.avatar.url : "src/assets/user.png"}
+                                src={userData?.avatar?.url ? userData.avatar.url : defaultProfile}
                                 alt="Profile"
                                 className="inline-block w-12 h-12 rounded-full mr-4"
                             />

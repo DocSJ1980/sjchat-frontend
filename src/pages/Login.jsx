@@ -10,6 +10,9 @@ import { UilEyeSlash } from '@iconscout/react-unicons'
 import { UilSpinnerAlt } from '@iconscout/react-unicons'
 import { setCredentials } from '../features/auth/authSlice';
 import { toast } from 'react-toastify';
+import loginPageImg from '../assets/loginpage.jpg'
+import googleSvg from '../assets/icons8-google.svg'
+
 const Login = () => {
     const [isSignup, setIsSignup] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -205,7 +208,7 @@ const Login = () => {
                         <hr className='text-gray-500' />
                     </div>
                     <button onClick={() => toast("Toast Working")} className='bg-white border py-2 w-full rounded-xl mt-5 flex justify-center items-center text-sm'>
-                        <img src='src\assets\icons8-google.svg' alt='google' className='mr-3' width="25px" />
+                        <img src={googleSvg} alt='google' className='mr-3' width="25px" />
                         Login with Google
                     </button>
                     <p className='text-xs mt-5 border-b border-gray-400 py-4 dark:text-gray-300'>Forgot your password? </p>
@@ -228,7 +231,7 @@ const Login = () => {
                 <div className="w-1/2 sm:block  hidden justify-center items-center ">
                     <div className='h-full flex justify-center items-center'>
 
-                        <img src='src\assets\loginpage.jpg' className='rounded-2xl  ' alt='login image' />
+                        <img src={loginPageImg} className='rounded-2xl  ' alt='login image' />
                     </div>
                 </div>
             </div>
