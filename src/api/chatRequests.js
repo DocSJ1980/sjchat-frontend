@@ -1,5 +1,5 @@
 import axios from "axios"
-const API = axios.create({ baseURL: 'https://sjchat-backend.onrender.com/api' })
+const API = axios.create({ baseURL: '/api' })
 export const userChats = async (id) => {
     try {
         const response = await API.get(`/chat/${id}`)

@@ -11,6 +11,7 @@ import LogoSearch from '../components/logoSearch';
 import controlImg from '../assets/control.png'
 import logoImg from '../assets/logo.png'
 import defaultProfile from '../assets/user.png'
+import { toast } from 'react-toastify';
 
 const MainChat = () => {
     const user = useSelector(selectUser)
@@ -41,7 +42,7 @@ const MainChat = () => {
 
 
     useEffect(() => {
-        socket.current = io("https://sjchat-backend.onrender.com")
+        socket.current = io("/")
         socket.current.emit("new-user-add", user._id)
         //create socket on event to get-users
         socket.current.on("get-users", (users) => {
@@ -65,6 +66,7 @@ const MainChat = () => {
 
     const handleSendLogout = async () => {
         const { message } = await sendLogout().unwrap()
+        // console.log(message)
         toast.success(message)
         socket.current.emit("log-out", user._id)
     }

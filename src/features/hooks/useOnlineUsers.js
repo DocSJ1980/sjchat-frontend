@@ -6,7 +6,7 @@ export const useOnlineUsers = (userId) => {
     const [onlineUsers, setOnlineUsers] = useState([]);
 
     useEffect(() => {
-        socketRef.current = io("https://sjchat-backend.onrender.com");
+        socketRef.current = io("/");
         socketRef.current.emit("new-user-add", userId);
 
         socketRef.current.on("get-users", (users) => {
